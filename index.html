@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI-Powered Pregnancy Guide</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <style>
+
+.team {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 30px;
+  margin-top: 30px;
+}
+.member {
+  background-color: rgba(255, 255, 255, 0.15);
+  padding: 20px;
+  border-radius: 15px;
+  width: 200px;
+  text-align: center;
+  transition: transform 0.3s;
+}
+.member:hover {
+  transform: translateY(-5px);
+}
+
+.member img {
+  border-radius: 10%;
+  width: 20px;
+  height: 10px;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+.member h3 {
+  margin: 10px 0 5px;
+  font-size: 18px;
+}
+
+.member p {
+  font-size: 14px;
+  color: #eee;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .team {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .member {
+    width: 80%;
+  }
+}
+
+    :root {
+      --bg-color: #f4f4f4;
+      --user-color: #007bff;
+      --bot-color: #e0f7da;
+      --text-color: #333;
+      --font: 'Inter', sans-serif;
+    }
+
+    body.dark {
+      --bg-color: #121212;
+      --user-color: #2196F3;
+      --bot-color: #37474F;
+      --text-color: #fff;
+    }
+
+    body {
+      font-family: var(--font);
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      scroll-behavior: smooth;
+      background: url('https://images.unsplash.com/photo-1493894473891-10fc1e5dbd22?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cHJlZ25hbmN5fGVufDB8fDB8fHww') no-repeat center center fixed;
+      background-size: cover;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+      background-color: #333;
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin: 0 15px;
+      font-weight: 500;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    body.dark .container {
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    h2 {
+      text-align: center;
+    }
+    .controls, .shortcuts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 1rem;
+    }
+    input[type="text"], select, button {
+      font-size: 1rem;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    
+    #chatbox {
+      border: 1px solid #000000;
+      padding: 1rem;
+      height: 400px;
+      overflow-y: auto;
+      background-color: #ebdddd;
+      border-radius: 8px;
+    }
+
+    body.dark #chatbox {
+      background-color: #1e1e1e;
+    }
+
+    .chat-entry {
+      display: flex;
+      margin: 10px 0;
+      align-items: flex-start;
+      animation: fadeIn 0.4s ease-in-out;
+    }
+
+    .chat-entry.user {
+      flex-direction: row-reverse;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin: 0 10px;
+    }
+
+    .bubble {
+      padding: 10px 15px;
+      border-radius: 18px;
+      line-height: 1.4;
+      max-width: 75%;
+      word-wrap: break-word;
+      background-color: var(--bot-color);
+      color: var(--text-color);
+    }
+
+    .user .bubble {
+      background-color: var(--user-color);
+      color: white;
+    }
+
+    
+
+    .typing-indicator {
+      display: inline-block;
+      position: relative;
+      width: 40px;
+      height: 20px;
+    }
+
+    .typing-indicator span {
+      background-color: #ccc;
+      border-radius: 50%;
+      display: inline-block;
+      height: 8px;
+      width: 8px;
+      margin: 0 2px;
+      animation: typing 1.4s infinite ease-in-out;
+    }
+
+    .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typing {
+      0%, 80%, 100% { transform: scale(0); }
+      40% { transform: scale(1); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      font-size: 16px;
+      width: 60%;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      padding: 10px 14px;
+      font-size: 16px;
+      margin: 10px 5px 0 0;
+      border-radius: 6px;
+      border: none;
+      background-color: #333;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #555;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    select {
+      padding: 8px;
+      border-radius: 6px;
+    }
+
+    #about, #contact {
+      background: linear-gradient(to right, #83adb9, #668d96);
+      color: white;
+      padding: 50px 30px;
+      text-align: center;
+      margin-top: 40px;
+      border-radius: 12px;
+    }
+
+    #about h2, #contact h2 {
+      margin-bottom: 15px;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        width: 90%;
+        padding: 15px;
+      }
+
+      input[type="text"] {
+        width: 100%;
+      }
+
+      .controls {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div>🤰 Pregnancy Guide</div>
+    <div>
+      <a href="#chat">Chat</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </nav>
+
+  <section id="chat" class="container">
+    <h2>AI-Powered Pregnancy Guide Chatbot</h2>
+    <div class="controls">
+      <input type="text" id="userInput" placeholder="Ask me anything about pregnancy..." />
+      <button onclick="sendMessage()">Send</button>
+      <button onclick="startListening()">🎤 Speak</button>
+      <button onclick="clearChat()">Clear</button>
+      <button onclick="downloadChat()">Download</button>
+      <select onchange="changeTheme(this.value)">
+        <option value="light">Light Theme</option>
+        <option value="dark">Dark Theme</option>
+      </select>
+    </div>
+    <div class="shortcuts">
+        <button onclick="preset('What foods should I avoid during pregnancy?')">Foods to avoid</button>
+        <button onclick="preset('What are signs of labor?')">Signs of labor</button>
+        <button onclick="preset('How to deal with morning sickness?')">Morning sickness</button>
+      </div>
+      <label for="week">Select your week:</label>
+      <select id="week" onchange="showTip()">
+        <option value="">-- Choose Week --</option>
+        <option value="1">Week 1</option>
+        <option value="2">Week 2</option>
+        <option value="3">Week 3</option>
+        <option value="4">Week 4</option>
+        <!-- Add more weeks as needed -->
+      </select>
+    <div id="chatbox"></div>
+  </section>
+
+  <section id="about">
+    <h2>About the Pregnancy Chatbot</h2>
+    <p>
+      This chatbot offers personalized, week-by-week insights, health tips, and emotional support throughout your pregnancy journey. Powered by Gemini 2.0 Flash AI.
+    </p>
+    <div class="team">
+        <div class="member">
+          <img src="" alt="Devarshi Raj">
+          <h3>12316856</h3>
+          <!-- <p>Frontend Developer</p> -->
+        </div>
+        <div class="member">
+          <img src="https://via.placeholder.com/100" alt="Ayush Kumar">
+          <h3>12307123</h3>
+          <!-- <p>Backend Developer</p> -->
+        </div>
+        <div class="member">
+          <img src="https://via.placeholder.com/100" alt="Saurabh Raj">
+          <h3>12314889</h3>
+          <!-- <p>API Integration & Testing</p> -->
+        </div>
+      </div>
+      
+  </section>
+
+  <section id="contact">
+    <h2>Contact Us</h2>
+    <p>Have questions, suggestions, or want to collaborate? Email us at <a href="mailto:your@email.com" style="color: #fff; text-decoration: underline;">your@email.com</a></p>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+    
+    const apiKey = "AIzaSyBaS7eu5a0v32WQn_hDZkC0RJTLzVprj4M";
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+    const chatbox = document.getElementById('chatbox');
+    const input = document.getElementById('userInput');
+    let history = [];
+
+    const avatars = {
+      user: "https://cdn-icons-png.flaticon.com/512/1946/1946429.png",
+      model: "https://cdn-icons-png.flaticon.com/512/4712/4712104.png"
+    };
+
+    function loadHistory() {
+      const saved = localStorage.getItem("pregnancy_guide_history");
+      if (saved) {
+        history = JSON.parse(saved);
+        history.forEach(msg => appendMessage(msg.role, msg.parts[0].text));
+      }
+    }
+
+    loadHistory();
+
+    function appendMessage(role, text) {
+      const div = document.createElement("div");
+      div.className = `chat-entry ${role} animate__animated animate__fadeInUp`;
+
+      const avatar = document.createElement("img");
+      avatar.className = "avatar";
+      avatar.src = avatars[role];
+
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+
+      let i = 0;
+      const plainText = marked.parse(text).replace(/<[^>]*>/g, "");
+      const typeEffect = () => {
+        if (i < plainText.length) {
+          bubble.innerHTML = plainText.substring(0, i + 1);
+          i++;
+          setTimeout(typeEffect, 10);
+        }
+      };
+      typeEffect();
+
+      div.appendChild(avatar);
+      div.appendChild(bubble);
+      chatbox.appendChild(div);
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+
+    async function sendMessage() {
+      const userText = input.value.trim();
+      if (!userText) return;
+      appendMessage("user", userText);
+      history.push({ role: 'user', parts: [{ text: userText }] });
+      input.value = "";
+
+      const typingDiv = document.createElement("div");
+      typingDiv.className = "chat-entry model";
+      typingDiv.innerHTML = `<img class="avatar" src="${avatars.model}" /><div class="bubble"><div class="typing-indicator"><span></span><span></span><span></span></div></div>`;
+      chatbox.appendChild(typingDiv);
+      chatbox.scrollTop = chatbox.scrollHeight;
+
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contents: history })
+      });
+
+      chatbox.removeChild(typingDiv);
+
+      const data = await res.json();
+      const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "(No response)";
+      appendMessage("model", reply);
+      speakText(reply);
+      history.push({ role: 'model', parts: [{ text: reply }] });
+      localStorage.setItem("pregnancy_guide_history", JSON.stringify(history));
+    }
+
+    function clearChat() {
+      localStorage.removeItem("pregnancy_guide_history");
+      chatbox.innerHTML = "";
+      history = [];
+    }
+
+    function downloadChat() {
+      if (!history.length) return;
+      let textContent = "Pregnancy Chat History\n\n";
+      history.forEach(msg => {
+        const sender = msg.role === 'user' ? "You" : "AI";
+        textContent += `${sender}: ${msg.parts[0].text}\n\n`;
+      });
+      const blob = new Blob([textContent], { type: "text/plain" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "pregnancy_chat_history.txt";
+      link.click();
+    }
+
+    function changeTheme(theme) {
+      document.body.className = theme;
+    }
+
+    function startListening() {
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = 'en-US';
+      recognition.start();
+      recognition.onresult = (event) => {
+        input.value = event.results[0][0].transcript;
+      };
+    }
+
+    function speakText(text) {
+      const speech = new SpeechSynthesisUtterance(text);
+      speech.lang = 'en-US';
+      window.speechSynthesis.speak(speech);
+    }
+    function showTip() {
+      const week = document.getElementById("week").value;
+      if (!week) return;
+      const tips = {
+        "1": "Week 1: You might not know you're pregnant yet. Start taking folic acid.",
+        "2": "Week 2: Fertilization may occur this week.",
+        "3": "Week 3: The embryo is developing rapidly.",
+        "4": "Week 4: It's time to take a pregnancy test!"
+      };
+      appendMessage("bot", tips[week] || "Week info coming soon...");
+    }
+
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") sendMessage();
+    });
+  </script>
+</body>
+</html>
