@@ -298,10 +298,6 @@
       <button onclick="sendMessage()">Send</button>
       <button onclick="startListening()">🎤 Speak</button>
       <button onclick="clearChat()">Clear</button>
-      <button onclick="downloadChat()">Download</button>
-
-
-
     </div>
     
       
@@ -381,7 +377,7 @@
     loadHistory();
 
     if (savedWeek) {
-      appendMessage("model", `👋 Hi ${firstName}! Welcome back. Here's your personalized tip for Week ${savedWeek}.`);
+      appendMessage("model", `👋 Hi ${firstName}! Welcome back.`);
       getWeeklyTip(savedWeek);
     } else {
       appendMessage("model", `👋 Welcome ${firstName}! Tell me your current pregnancy week so I can help.`);
@@ -496,7 +492,7 @@
     
     function getWeeklyTip(week) {
       const prompt = `
-      You are an expert pregnancy assistant AI named "Maya". Your job is to guide pregnant users with helpful, warm, and accurate information.
+      You are an expert pregnancy assistant AI. Your job is to guide pregnant users with helpful, warm, and accurate information.
 
 Context:
 - The user is currently pregnant. with name ${(firstName)},
@@ -537,26 +533,6 @@ Context:
     }
     
 
-    function clearChat() {
-      localStorage.removeItem("pregnancy_guide_history");
-      chatbox.innerHTML = "";
-      history = [];
-    }
-
-    function downloadChat() {
-      if (!history.length) return;
-      let textContent = "Pregnancy Chat History\n\n";
-      history.forEach(msg => {
-        const sender = msg.role === 'user' ? "You" : "AI";
-        textContent += `${sender}: ${msg.parts[0].text}\n\n`;
-      });
-      const blob = new Blob([textContent], { type: "text/plain" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = "pregnancy_chat_history.txt";
-      link.click();
-    }
-
     function changeTheme(theme) {
       document.body.className = theme;
     }
@@ -568,24 +544,6 @@ Context:
       recognition.onresult = (event) => {
         input.value = event.results[0][0].transcript;
       };
-    }
-
-    const weekDropdown = document.getElementById("week");
-weekDropdown.innerHTML = '<option value="">-- Choose Week --</option>';
-for (let i = 1; i <= 40; i++) {
-  weekDropdown.innerHTML += `<option value="${i}">Week ${i}</option>`;
-}
-
-    function showTip() {
-      const week = document.getElementById("week").value;
-      if (!week) return;
-      const tips = {
-        "1": "Week 1: You might not know you're pregnant yet. Start taking folic acid.",
-        "2": "Week 2: Fertilization may occur this week.",
-        "3": "Week 3: The embryo is developing rapidly.",
-        "4": "Week 4: It's time to take a pregnancy test!"
-      };
-      appendMessage("bot", tips[week] || "Week info coming soon...");
     }
 
     input.addEventListener("keydown", function (e) {
