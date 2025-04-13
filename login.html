@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background: #fff9f8; height: 100vh; display: flex; align-items: center; justify-content: center;">
+
+  <div style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); width: 300px; text-align: center;">
+    <h2 style="margin-bottom: 20px;">Login</h2>
+
+    <input type="text" id="username" placeholder="Username"
+      style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;" />
+
+    <input type="password" id="password" placeholder="Password"
+      style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;" />
+
+    <label style="display: flex; align-items: center; margin-bottom: 10px; font-size: 14px;">
+      <input type="checkbox" id="rememberMe" style="margin-right: 5px;" />
+      Remember me
+    </label>
+
+    <button onclick="handleLogin()" style="width: 100%; padding: 10px; background: #333; color: white; border: none; border-radius: 5px; cursor: pointer;">
+      Login
+    </button>
+
+    <div id="message" style="margin-top: 10px; color: red; font-size: 14px;"></div>
+
+    <p style="margin-top: 10px; font-size: 14px;">Don't have an account? <a href="register.html" style="color: #007bff;">Register here</a></p>
+  </div>
+
+  <script>
+    function handleLogin() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value;
+    
+      const users = JSON.parse(localStorage.getItem("users")) || {};
+    
+      const user = users[username];
+    
+      if (!user) {
+        document.getElementById("message").innerText = "User does not exist.";
+        return;
+      }
+    
+      if (typeof user === "string" && user !== password) {
+        // Handle old structure where value was just password string
+        document.getElementById("message").innerText = "Incorrect password.";
+        return;
+      }
+    
+      if (user.password !== password) {
+        document.getElementById("message").innerText = "Incorrect password.";
+        return;
+      }
+    
+      // ✅ Login successful
+      localStorage.setItem("loggedIn", "true");
+      localStorage.setItem("loggedUser", username);
+      localStorage.setItem("firstname", user.firstname || username);
+      localStorage.setItem("pregnancy_week", user.week || "1");
+    
+      if (document.getElementById("rememberMe").checked) {
+        localStorage.setItem("rememberUser", username);
+      } else {
+        localStorage.removeItem("rememberUser");
+      }
+    
+      alert("Login successful!");
+      location.href = "index.html";  // Or your chatbot page
+    }
+    
+
+    window.onload = function () {
+      const remembered = localStorage.getItem("rememberUser");
+      if (remembered) {
+        document.getElementById("username").value = remembered;
+        document.getElementById("rememberMe").checked = true;
+      }
+    };
+  </script>
+</body>
+</html>

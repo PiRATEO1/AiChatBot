@@ -281,6 +281,10 @@
   <nav>
     <div>🤰 Pregnancy Guide</div>
     <div>
+      <button onclick="logout()" style="margin-left: auto; padding: 8px 12px; background: #c62828; color: white; border: none; border-radius: 6px; cursor: pointer;">
+        Logout
+      </button>
+      
       <a href="#chat">Chat</a>
       <a href="#about">About</a>
       <a href="#contact">Contact</a>
@@ -289,31 +293,18 @@
 
   <section id="chat" class="container">
     <h2>AI-Powered Pregnancy Guide Chatbot</h2>
-    <div class="controls">
+    <div class="controls">    
       <input type="text" id="userInput" placeholder="Ask me anything about pregnancy..." />
       <button onclick="sendMessage()">Send</button>
       <button onclick="startListening()">🎤 Speak</button>
       <button onclick="clearChat()">Clear</button>
       <button onclick="downloadChat()">Download</button>
-      <select onchange="changeTheme(this.value)">
-        <option value="light">Light Theme</option>
-        <option value="dark">Dark Theme</option>
-      </select>
+
+
+
     </div>
-    <div class="shortcuts">
-        <button onclick="preset('What foods should I avoid during pregnancy?')">Foods to avoid</button>
-        <button onclick="preset('What are signs of labor?')">Signs of labor</button>
-        <button onclick="preset('How to deal with morning sickness?')">Morning sickness</button>
-      </div>
-      <label for="week">Select your week:</label>
-      <select id="week" onchange="showTip()">
-        <option value="">-- Choose Week --</option>
-        <option value="1">Week 1</option>
-        <option value="2">Week 2</option>
-        <option value="3">Week 3</option>
-        <option value="4">Week 4</option>
-        <!-- Add more weeks as needed -->
-      </select>
+    
+      
     <div id="chatbox"></div>
   </section>
 
@@ -349,6 +340,23 @@
 
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script>
+    const currentUser = localStorage.getItem("loggedUser") || "Mommy";
+    const firstName = localStorage.getItem("firstname") || currentUser;
+    const savedWeek = localStorage.getItem("pregnancy_week") || null;
+    
+
+    if (localStorage.getItem("loggedIn") !== "true") {
+      window.location.href = "login.html";
+    }
+
+    function logout() {
+      localStorage.removeItem("loggedIn");
+      location.href = "login.html";
+    }
+    
+  </script>
+  
+  <script>
     
     const apiKey = "AIzaSyBaS7eu5a0v32WQn_hDZkC0RJTLzVprj4M";
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
@@ -371,6 +379,14 @@
     }
 
     loadHistory();
+
+    if (savedWeek) {
+      appendMessage("model", `👋 Hi ${firstName}! Welcome back. Here's your personalized tip for Week ${savedWeek}.`);
+      getWeeklyTip(savedWeek);
+    } else {
+      appendMessage("model", `👋 Welcome ${firstName}! Tell me your current pregnancy week so I can help.`);
+    }
+    
 
     function appendMessage(role, text) {
       const div = document.createElement("div");
@@ -400,34 +416,126 @@
       chatbox.scrollTop = chatbox.scrollHeight;
     }
 
+    
+
     async function sendMessage() {
       const userText = input.value.trim();
       if (!userText) return;
       appendMessage("user", userText);
       history.push({ role: 'user', parts: [{ text: userText }] });
       input.value = "";
-
+    
       const typingDiv = document.createElement("div");
       typingDiv.className = "chat-entry model";
       typingDiv.innerHTML = `<img class="avatar" src="${avatars.model}" /><div class="bubble"><div class="typing-indicator"><span></span><span></span><span></span></div></div>`;
       chatbox.appendChild(typingDiv);
       chatbox.scrollTop = chatbox.scrollHeight;
+    
+      try {
+        const res = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ contents: history.slice(-10) })
+        });
+    
+        chatbox.removeChild(typingDiv);
+    
+        if (!res.ok) throw new Error("Network response was not ok");
+    
+        const data = await res.json();
+        const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "(No response)";
+        appendMessage("model", reply);
+        speakText(reply);
+        history.push({ role: 'model', parts: [{ text: reply }] });
+        localStorage.setItem("pregnancy_guide_history", JSON.stringify(history));
+      } catch (error) {
+        chatbox.removeChild(typingDiv);
+        appendMessage("model", "Sorry, there was a problem connecting to the AI.");
+        console.error("API error:", error);
+      }
+    }
 
-      const res = await fetch(endpoint, {
+    function handleWeekInput() {
+      const week = parseInt(document.getElementById("weekInput").value);
+      if (!week || week < 1 || week > 40) {
+        appendMessage("model", "Please enter a valid pregnancy week between 1 and 40.");
+        return;
+      }
+    
+      const prompt = `Give detailed health, emotional, and nutritional tips for pregnancy week ${week}.`;
+      appendMessage("user","hiy");
+      history.push({ role: 'user', parts: [{ text: prompt }] });
+    
+      const typingDiv = document.createElement("div");
+      typingDiv.className = "chat-entry model";
+      typingDiv.innerHTML = `<img class="avatar" src="${avatars.model}" /><div class="bubble"><div class="typing-indicator"><span></span><span></span><span></span></div></div>`;
+      chatbox.appendChild(typingDiv);
+      chatbox.scrollTop = chatbox.scrollHeight;
+    
+      fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contents: history })
-      });
-
-      chatbox.removeChild(typingDiv);
-
-      const data = await res.json();
-      const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "(No response)";
-      appendMessage("model", reply);
-      speakText(reply);
-      history.push({ role: 'model', parts: [{ text: reply }] });
-      localStorage.setItem("pregnancy_guide_history", JSON.stringify(history));
+        body: JSON.stringify({ contents: history.slice(-10) })
+      })
+        .then(res => res.json())
+        .then(data => {
+          chatbox.removeChild(typingDiv);
+          const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "(No response)";
+          appendMessage("model", reply);
+          speakText(reply);
+          history.push({ role: 'model', parts: [{ text: reply }] });
+          localStorage.setItem("pregnancy_guide_history", JSON.stringify(history));
+        })
+        .catch(err => {
+          chatbox.removeChild(typingDiv);
+          appendMessage("model", "There was an error fetching the tip. Please try again.");
+          console.error(err);
+        });
     }
+    
+    
+    function getWeeklyTip(week) {
+      const prompt = `
+      You are an expert pregnancy assistant AI named "Maya". Your job is to guide pregnant users with helpful, warm, and accurate information.
+
+Context:
+- The user is currently pregnant. with name ${(firstName)},
+- Your answers must be week-specific, supportive, and medically sound. the week is ${(week)}.
+- Use simple, clear language.
+- Include tips about baby's development, mother's health, recommended diet, and upcoming checkups.
+- Never give medical diagnosis or treatment. Encourage contacting a doctor if necessary.
+- Answer in 2 short paragraphs max.`;
+    
+      history.push({ role: 'user', parts: [{ text: prompt }] });
+      appendMessage("user",);
+    
+      const typingDiv = document.createElement("div");
+      typingDiv.className = "chat-entry model";
+      typingDiv.innerHTML = `<img class="avatar" src="${avatars.model}" /><div class="bubble"><div class="typing-indicator"><span></span><span></span><span></span></div></div>`;
+      chatbox.appendChild(typingDiv);
+      chatbox.scrollTop = chatbox.scrollHeight;
+    
+      fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contents: history.slice(-10) })
+      })
+        .then(res => res.json())
+        .then(data => {
+          chatbox.removeChild(typingDiv);
+          const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "(No response)";
+          appendMessage("model", reply);
+          speakText(reply);
+          history.push({ role: 'model', parts: [{ text: reply }] });
+          localStorage.setItem("pregnancy_guide_history", JSON.stringify(history));
+        })
+        .catch(err => {
+          chatbox.removeChild(typingDiv);
+          appendMessage("model", "Sorry, there was a problem getting your weekly tip.");
+          console.error(err);
+        });
+    }
+    
 
     function clearChat() {
       localStorage.removeItem("pregnancy_guide_history");
@@ -462,11 +570,12 @@
       };
     }
 
-    function speakText(text) {
-      const speech = new SpeechSynthesisUtterance(text);
-      speech.lang = 'en-US';
-      window.speechSynthesis.speak(speech);
-    }
+    const weekDropdown = document.getElementById("week");
+weekDropdown.innerHTML = '<option value="">-- Choose Week --</option>';
+for (let i = 1; i <= 40; i++) {
+  weekDropdown.innerHTML += `<option value="${i}">Week ${i}</option>`;
+}
+
     function showTip() {
       const week = document.getElementById("week").value;
       if (!week) return;

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Register</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background: #fff9f8; height: 100vh; display: flex; align-items: center; justify-content: center;">
+
+  <div style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); width: 300px; text-align: center;">
+    <h2 style="margin-bottom: 20px;">Register</h2>
+
+    <input type="text" id="firstname" placeholder="First Name"
+      style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;" />
+
+      <input type="text" id="lastname" placeholder="Last Name"
+      style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;" />
+
+    <input type="text" id="username" placeholder="Username"
+      style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;" />
+
+    <input type="password" id="password" placeholder="Password"
+      style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;" />
+      
+    <input type="number" id="week" placeholder="Week of Pregnancy"
+      style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;" />
+
+      <label style="display: flex; align-items: center; margin-bottom: 10px; font-size: 14px;">
+        <input type="checkbox" id="rememberMe" style="margin-right: 5px;" />
+        Remember me
+      </label>
+
+    <button onclick="handleRegister()" style="width: 100%; padding: 10px; background: #333; color: white; border: none; border-radius: 5px; cursor: pointer;">
+      Register
+    </button>
+
+    <div id="message" style="margin-top: 10px; color: red; font-size: 14px;"></div>
+
+    <p style="margin-top: 10px; font-size: 14px;">Already have an account? <a href="login.html" style="color: #007bff;">Login here</a></p>
+  </div>
+
+  <script>
+    function handleRegister() {
+      const firstname = document.getElementById("firstname").value.trim();
+      const lastname = document.getElementById("lastname").value.trim();
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value;
+      const week = parseInt(document.getElementById("week").value);
+      const rememberMe = document.getElementById("rememberMe").checked;
+    
+      if (!firstname || !lastname || !username || !password || !week || week < 1 || week > 40) {
+        document.getElementById("message").innerText = "Please fill in all fields with valid values.";
+        return;
+      }
+    
+      const users = JSON.parse(localStorage.getItem("users")) || {};
+    
+      if (users[username]) {
+        document.getElementById("message").innerText = "User already exists. Please log in.";
+        return;
+      }
+    
+      // Save the user object with name, password, and week
+      users[username] = {
+        password: password,
+        firstname: firstname,
+        lastname: lastname,
+        week: week
+      };
+    
+      localStorage.setItem("users", JSON.stringify(users));
+    
+      if (rememberMe) {
+        localStorage.setItem("currentUser", username);
+        localStorage.setItem("pregnancy_week", week);  // Save globally for chatbot use
+      }
+    
+      alert("Registration successful! Please log in.");
+      location.href = "login.html";
+    }
+    
+  </script>
+</body>
+</html>
