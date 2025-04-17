@@ -418,7 +418,7 @@
       const userText = input.value.trim();
       if (!userText) return;
       appendMessage("user", userText);
-      "history.push({ role: 'user', parts: [{ text: userText }] });"
+      history.push({ role: 'user', parts: [{ text: userText }] });
       input.value = "";
     
       const typingDiv = document.createElement("div");
